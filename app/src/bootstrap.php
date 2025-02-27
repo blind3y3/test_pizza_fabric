@@ -6,13 +6,16 @@ use FastRoute\Dispatcher;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
 readonly class App
 {
-    public function __construct(private ContainerInterface $container) {}
+    public function __construct(private ContainerInterface $container)
+    {
+    }
 
     /**
      * @throws ContainerExceptionInterface
@@ -29,10 +32,10 @@ readonly class App
 
         switch ($dispatcher[0]) {
             case Dispatcher::NOT_FOUND:
-                $response = new Response('404 Not Found', 404);
+                $response = new JsonResponse(['message' => '404 Not Found'], 404);
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
-                $response = new Response('405 Method Not Allowed', 405);
+                $response = new JsonResponse(['message' => '405 Method Not Allowed'], 405);
                 break;
             case Dispatcher::FOUND:
                 [$controller, $method] = $dispatcher[1];
