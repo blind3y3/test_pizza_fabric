@@ -1,0 +1,38 @@
+version: 3
+
+tasks:
+  # docker
+  build:
+    cmds:
+      - docker compose up --build -d
+  up:
+    cmds:
+      - docker compose up -d
+  down:
+    cmds:
+      - docker compose down
+  down-v:
+    cmds:
+      - docker compose down --remove-orphans --volumes
+  restart:
+    cmds:
+      - task: down
+      - task: up
+  destroy:
+    cmds:
+      - docker compose down --rmi all --volumes --remove-orphans
+
+  dump-autoload:
+    cmd: docker compose exec php composer dump-autoload
+
+  php:
+    cmd: docker compose exec php {{.c}}
+
+  # other
+  permissions:
+    cmds:
+      - 'sudo chown $USER:$USER app'
+  for-linux-env:
+    cmd: 'cp .env.example .env'
+  default:
+    - task: up

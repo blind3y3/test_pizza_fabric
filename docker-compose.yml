@@ -1,0 +1,69 @@
+services:
+  nginx:
+    container_name: hw_app_nginx
+    build:
+      context: ./docker
+      dockerfile: nginx/Dockerfile
+    volumes:
+      - ./app:/app
+    depends_on:
+      - php
+    ports:
+      - "8080:80"
+    networks:
+      - hw_app-network
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    volumes:
+      - ./app:/app
+      - ~/.composer-docker/cache:/root/.composer/cache
+    depends_on:
+      - mysql
+    networks:
+      - hw_app-network
+
+  mysql:
+    container_name: hw_app_mysql
+    image: mysql:8.0-debian
+    volumes:
+      - hw_app-mysql-data:/var/lib/mysql
+      - ./docker/mysql/default.cnf:/etc/mysql/conf.d/default.cnf
+    environment:
+      - MYSQL_USER=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_PASSWORD=${DB_USERNAME}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    ports:
+      - "33061:3306"
+    networks:
+      - hw_app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: hw_app_pma
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+
+    ports:
+      - "8081:80"
+    networks:
+      - hw_app-network
+    links:
+      - mysql
+    restart: always
+
+volumes:
+  hw_app-mysql-data:
+  rabbitmq-data:
+
+networks:
+  hw_app-network:
+    driver: bridge
