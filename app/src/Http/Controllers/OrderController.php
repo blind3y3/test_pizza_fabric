@@ -23,10 +23,13 @@ readonly class OrderController
         $this->logger = $this->container->get('appLogger');
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function index(): JsonResponse
     {
         $orders = $this->orderService->getOrders();
-        return new JsonResponse(['success' => true, 'data' => $orders]);
+        return new JsonResponse($orders->toArray());
     }
 
     /**

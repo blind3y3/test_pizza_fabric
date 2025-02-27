@@ -12,7 +12,8 @@
     "autoload": {
         "psr-4": {
             "App\\": "src/",
-            "Modules\\": "src/Modules"
+            "Modules\\": "src/Modules",
+            "Core\\": "src/Core"
         }
     },
     "require-dev": {
