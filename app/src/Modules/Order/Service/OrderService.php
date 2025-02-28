@@ -40,6 +40,18 @@ readonly class OrderService
         $orderId = mt_rand(100_000_000_000_000, 999_999_999_999_999);
         $dto = OrderDto::createFromRequestData($orderId, $items);
         $this->orderRepository->save($dto);
+
         return $dto;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function addItems(int $orderId, array $items): void
+    {
+        $order = $this->orderRepository->getById($orderId);
+        $dto = OrderDto::createFromArray($order);
+        $dto->items = [...$dto->items, ...$items];
+        $this->orderRepository->updateItems($dto);
     }
 }

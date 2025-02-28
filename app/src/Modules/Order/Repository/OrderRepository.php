@@ -62,4 +62,34 @@ class OrderRepository
             ->setParameter('done', $dto->done, ParameterType::BOOLEAN)
             ->executeStatement();
     }
+
+    /**
+     * @throws Exception
+     */
+    public function getById(int $orderId): array
+    {
+        /** @noinspection PhpDqlBuilderUnknownModelInspection */
+        return $this->builder
+            ->select('*')
+            ->from('orders')
+            ->where('order_id = :orderId')
+            ->setParameter('orderId', $orderId)
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function updateItems(OrderDto $dto): void
+    {
+        $this->builder
+            ->update('orders')
+            ->where('order_id = :orderId')
+            ->set('items', ':items')
+            ->setParameter('orderId', $dto->orderId)
+            ->setParameter('items', json_encode($dto->items))
+            ->executeStatement();
+    }
 }

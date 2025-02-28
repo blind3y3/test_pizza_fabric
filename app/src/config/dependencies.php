@@ -14,12 +14,14 @@ use function FastRoute\simpleDispatcher;
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->useAutowiring(true);
 
-
 $containerBuilder->addDefinitions([
     'routes'     => function () {
         return simpleDispatcher(function (RouteCollector $r) {
-            $r->addRoute('GET', '/api/orders', [OrderController::class, 'index']);
-            $r->addRoute('POST', '/api/orders', [OrderController::class, 'create']);
+            $r->addGroup('/api/orders', function () use ($r) {
+                $r->addRoute('GET', '', [OrderController::class, 'index']);
+                $r->addRoute('POST', '', [OrderController::class, 'create']);
+                $r->addRoute('POST', '/{orderId}/items', [OrderController::class, 'addItems']);
+            });
         });
     },
     'appLogger'  => function () {

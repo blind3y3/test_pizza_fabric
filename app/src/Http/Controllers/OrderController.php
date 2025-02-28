@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RequestHelper;
+use App\Modules\Order\Validation\OrderAddItemsRequestValidation;
 use Exception;
 use Modules\Order\Service\OrderService;
 use Modules\Order\Validation\OrderCreateValidation;
@@ -46,18 +48,38 @@ readonly class OrderController
      */
     public function create(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-
         try {
-            OrderCreateValidation::validate($data);
+            OrderCreateValidation::validate(RequestHelper::extractItems($request));
         } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
             return new JsonResponse([
                 'message' => $exception->getMessage(),
             ], 400);
         }
 
-        $order = $this->orderService->create($data['items']);
+        $order = $this->orderService->create(RequestHelper::extractItems($request));
 
         return new JsonResponse($order);
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function addItems(Request $request, array $vars): JsonResponse
+    {
+        try {
+            OrderAddItemsRequestValidation::validate($vars);
+            OrderCreateValidation::validate(RequestHelper::extractItems($request));
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
+            return new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 400);
+        }
+
+        $orderId = RequestHelper::extractOrderId($vars);
+        $this->orderService->addItems($orderId, RequestHelper::extractItems($request));
+
+        return new JsonResponse(null, 200);
     }
 }
