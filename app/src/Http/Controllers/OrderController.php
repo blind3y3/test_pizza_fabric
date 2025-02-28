@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use Exception;
 use Modules\Order\Service\OrderService;
 use Modules\Order\Validation\OrderCreateValidation;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,8 +15,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 readonly class OrderController
 {
-    private readonly LoggerInterface $logger;
+    private LoggerInterface $logger;
 
+    /**
+     * @throws ContainerExceptionInterface
+     */
     public function __construct(
         private OrderService $orderService,
         private ContainerInterface $container,
@@ -24,16 +28,21 @@ readonly class OrderController
     }
 
     /**
+     * Получение списка всех заказов
+     *
      * @throws \Doctrine\DBAL\Exception
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $orders = $this->orderService->getOrders();
+        $orders = $this->orderService->getOrders($request->query->get('done'));
+
         return new JsonResponse($orders->toArray());
     }
 
     /**
-     * @throws Exception
+     * Создание нового заказа клиентом
+     *
+     * @throws \Doctrine\DBAL\Exception
      */
     public function create(Request $request): JsonResponse
     {
@@ -47,31 +56,8 @@ readonly class OrderController
             ], 400);
         }
 
-        return new JsonResponse(
-            [
-                'order_id' => 123,
-                'items'    => [1, 2, 3, 4],
-                'done'     => false,
-            ]
-        );
-    }
+        $order = $this->orderService->create($data['items']);
 
-    public function addItems(Request $request): JsonResponse
-    {
-        return new JsonResponse(null, 200);
-    }
-
-    public function getById(int $id): JsonResponse
-    {
-        return new JsonResponse(
-            [
-                'order_id' => 123,
-                'items'    => [1, 2, 3, 4],
-                'done'     => false,
-            ], 200);
-    }
-
-    public function setDone(int $id): JsonResponse
-    {
+        return new JsonResponse($order);
     }
 }

@@ -32,13 +32,16 @@ $containerBuilder->addDefinitions([
     },
     'connection' => function () {
         return DriverManager::getConnection([
-            'driver'   => 'pdo_mysql',
-            'host'     => 'mysql',
-            'port'     => 3306,
-            'user'     => 'root',
-            'password' => 'mypass',
-            'dbname'   => 'localdb',
-            'charset'  => 'utf8mb4',
+            'driver'        => 'pdo_mysql',
+            'host'          => 'mysql',
+            'port'          => 3306,
+            'user'          => 'root',
+            'password'      => 'mypass',
+            'dbname'        => 'localdb',
+            'charset'       => 'utf8mb4',
+            'driverOptions' => [
+                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+            ]
         ]);
     }
 ]);

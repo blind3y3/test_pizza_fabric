@@ -9,7 +9,7 @@ final class CreateOrdersTable extends AbstractMigration
     public function change(): void
     {
         $this->table('orders', ['id' => false, 'primary_key' => ['order_id']])
-            ->addColumn('order_id', 'integer', ['identity' => true])
+            ->addColumn('order_id', 'biginteger', ['null' => false])
             ->addColumn('items', 'json', ['null' => false])
             ->addColumn('done', 'boolean', ['null' => false, 'default' => false, 'comment' => 'Статус'])
             ->create();

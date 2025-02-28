@@ -22,9 +22,13 @@ class OrderDto
         $this->done = $done;
     }
 
-
     public static function createFromArray(array $data): self
     {
         return new self($data['order_id'], json_decode($data['items'], true), (bool)$data['done']);
+    }
+
+    public static function createFromRequestData(int $orderId, array $items, bool $done = false): self
+    {
+        return new self($orderId, $items, $done);
     }
 }

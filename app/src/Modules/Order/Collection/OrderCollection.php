@@ -6,9 +6,12 @@ namespace Modules\Order\Collection;
 
 use Modules\Order\Dto\OrderDto;
 
+/**
+ * @TODO Возможно, стоит делать интерфейс или базовый абстрактный класс, чтобы его указывать в тайп хинтах
+ */
 class OrderCollection
 {
-    private array $orders;
+    private array $orders = [];
 
     public function add(OrderDto $order): void
     {

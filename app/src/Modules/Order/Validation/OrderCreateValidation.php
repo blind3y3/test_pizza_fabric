@@ -15,7 +15,7 @@ class OrderCreateValidation
     public static function validate(array $data): void
     {
         if (!array_key_exists('items', $data)) {
-            throw new Exception('Items is required.');
+            throw new Exception("Поле 'items' является обязательным");
         }
 
         v::arrayType()
@@ -23,7 +23,7 @@ class OrderCreateValidation
             ->each(v::numericVal())
             ->each(v::min(1))
             ->each(v::max(5000))
-            ->setTemplate("items должен быть непустым массивом чисел от 1 до 5000")
+            ->setTemplate("'items' должен быть непустым массивом чисел от 1 до 5000")
             ->assert($data['items']);
     }
 }
