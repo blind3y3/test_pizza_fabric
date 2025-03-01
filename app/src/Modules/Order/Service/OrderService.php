@@ -83,4 +83,12 @@ readonly class OrderService
         }
         return OrderDto::createFromArray($order);
     }
+
+    /**
+     * @throws Exception
+     */
+    public  function setDone(int $orderId): void
+    {
+        $this->orderRepository->setDone($orderId);
+    }
 }

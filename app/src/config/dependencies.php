@@ -39,9 +39,9 @@ $containerBuilder->addDefinitions([
             'driver'        => 'pdo_mysql',
             'host'          => 'mysql',
             'port'          => 3306,
-            'user'          => 'root',
-            'password'      => 'mypass',
-            'dbname'        => 'localdb',
+            'user'          => getenv('DB_USERNAME'),
+            'password'      => getenv('DB_PASSWORD'),
+            'dbname'        => getenv('DB_DATABASE'),
             'charset'       => 'utf8mb4',
             'driverOptions' => [
                 PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,

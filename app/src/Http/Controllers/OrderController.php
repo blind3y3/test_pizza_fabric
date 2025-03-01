@@ -127,6 +127,8 @@ readonly class OrderController
             ], $exception->getCode());
         }
 
+        $this->orderService->setDone(RequestHelper::extractOrderId($vars));
+
         return new JsonResponse(null, 200);
     }
 }

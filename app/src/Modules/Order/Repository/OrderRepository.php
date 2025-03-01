@@ -107,4 +107,17 @@ class OrderRepository
             ->executeQuery()
             ->fetchAssociative();
     }
+
+    /**
+     * @throws Exception
+     */
+    public function setDone(int $orderId): void
+    {
+        $this->builder
+            ->update('orders')
+            ->where('order_id = :orderId')
+            ->set('done', '1')
+            ->setParameter('orderId', $orderId)
+            ->executeStatement();
+    }
 }
