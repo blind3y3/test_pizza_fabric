@@ -10,7 +10,7 @@ class RequestHelper
 {
     public static function extractOrderId(array $vars): int
     {
-        return (int)$vars['orderId'];
+        return (int)$vars['order_id'];
     }
 
     public static function extractItems(Request $request): array

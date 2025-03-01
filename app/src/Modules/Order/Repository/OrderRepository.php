@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Order\Repository;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Doctrine\DBAL\Types\BooleanType;
 use Modules\Order\Dto\OrderDto;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -37,7 +35,8 @@ class OrderRepository
             ->from('orders');
 
         if ($done) {
-            $this->builder->where('done = :done')
+            $this->builder
+                ->where('done = :done')
                 ->setParameter('done', $done);
         }
 
@@ -66,7 +65,7 @@ class OrderRepository
     /**
      * @throws Exception
      */
-    public function getById(int $orderId): array
+    public function getById(int $orderId): array|false
     {
         /** @noinspection PhpDqlBuilderUnknownModelInspection */
         return $this->builder
@@ -91,5 +90,21 @@ class OrderRepository
             ->setParameter('orderId', $dto->orderId)
             ->setParameter('items', json_encode($dto->items))
             ->executeStatement();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function checkOrderExistsAndNotDone(int $orderId): bool
+    {
+        /** @noinspection PhpDqlBuilderUnknownModelInspection */
+        return (bool)$this->builder
+            ->select('*')
+            ->from('orders')
+            ->where('order_id = :orderId')
+            ->andWhere('done = false')
+            ->setParameter('orderId', $orderId)
+            ->executeQuery()
+            ->fetchAssociative();
     }
 }

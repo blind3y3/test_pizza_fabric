@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Order\Service;
 
+use App\Modules\Order\Exception\OrderCannotBeModifiedException;
+use App\Modules\Order\Exception\OrderNotFoundException;
 use Doctrine\DBAL\Exception;
 use Modules\Order\Collection\OrderCollection;
 use Modules\Order\Dto\OrderDto;
@@ -45,13 +47,40 @@ readonly class OrderService
     }
 
     /**
+     * @throws OrderCannotBeModifiedException|Exception
+     */
+    public function checkOrderExistsAndNotDone(int $orderId): void
+    {
+        if (!$this->orderRepository->checkOrderExistsAndNotDone($orderId)) {
+            throw new OrderCannotBeModifiedException();
+        }
+    }
+
+    /**
      * @throws Exception
+     * @throws OrderNotFoundException
      */
     public function addItems(int $orderId, array $items): void
     {
         $order = $this->orderRepository->getById($orderId);
+        if (!$order) {
+            throw new OrderNotFoundException();
+        }
         $dto = OrderDto::createFromArray($order);
         $dto->items = [...$dto->items, ...$items];
         $this->orderRepository->updateItems($dto);
+    }
+
+    /**
+     * @throws Exception
+     * @throws OrderNotFoundException
+     */
+    public function getById(int $orderId): OrderDto
+    {
+        $order = $this->orderRepository->getById($orderId);
+        if (!$order) {
+            throw new OrderNotFoundException();
+        }
+        return OrderDto::createFromArray($order);
     }
 }

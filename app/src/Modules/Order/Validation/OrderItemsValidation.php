@@ -7,7 +7,7 @@ namespace Modules\Order\Validation;
 use Exception;
 use Respect\Validation\Validator as v;
 
-class OrderCreateValidation
+class OrderItemsValidation
 {
     /**
      * @throws Exception

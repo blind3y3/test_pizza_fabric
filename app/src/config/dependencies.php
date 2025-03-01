@@ -20,7 +20,9 @@ $containerBuilder->addDefinitions([
             $r->addGroup('/api/orders', function () use ($r) {
                 $r->addRoute('GET', '', [OrderController::class, 'index']);
                 $r->addRoute('POST', '', [OrderController::class, 'create']);
-                $r->addRoute('POST', '/{orderId}/items', [OrderController::class, 'addItems']);
+                $r->addRoute('POST', '/{order_id}/items', [OrderController::class, 'addItems']);
+                $r->addRoute('POST', '/{order_id}/done', [OrderController::class, 'setDone']);
+                $r->addRoute('GET', '/{order_id}', [OrderController::class, 'getById']);
             });
         });
     },

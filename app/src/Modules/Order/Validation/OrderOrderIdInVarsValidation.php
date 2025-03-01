@@ -7,7 +7,7 @@ namespace App\Modules\Order\Validation;
 use Exception;
 use Respect\Validation\Validator as v;
 
-class OrderAddItemsRequestValidation
+class OrderOrderIdInVarsValidation
 {
     /**
      * @throws Exception
