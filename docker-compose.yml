@@ -20,6 +20,8 @@ services:
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
+    env_file:
+      - .env
     volumes:
       - ./app:/app
       - ~/.composer-docker/cache:/root/.composer/cache
@@ -51,7 +53,6 @@ services:
       PMA_HOST: mysql
       PMA_PORT: 3306
       PMA_ARBITRARY: 1
-
     ports:
       - "8081:80"
     networks:

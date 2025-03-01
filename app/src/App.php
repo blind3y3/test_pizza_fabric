@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Bootstrap;
+namespace App;
 
 use FastRoute\Dispatcher;
 use Psr\Container\ContainerExceptionInterface;

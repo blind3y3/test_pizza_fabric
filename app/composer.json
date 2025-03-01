@@ -8,8 +8,7 @@
         "monolog/monolog": "^3.8",
         "doctrine/dbal": "^4.2",
         "robmorgan/phinx": "^0.16.6",
-        "ext-pdo": "*",
-        "symfony/dotenv": "^7.2"
+        "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {
