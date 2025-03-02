@@ -10,6 +10,7 @@
    'user' => 'значение DB_USERNAME из .env',
    'pass' => 'значение DB_PASSWORD из .env',
    ```
+    - Выполнить `task migrate`
 
 2. Если в системе нет [task](https://taskfile.dev/):
     - `cp .env.example .env`

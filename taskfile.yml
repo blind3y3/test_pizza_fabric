@@ -29,9 +29,6 @@ tasks:
       - task: build
       - docker compose exec php composer install
       - 'cp app/phinx.example.php app/phinx.php'
-      # потом заполнить переменные в phinx.php
-      - task: migrate
-      # опционально: task seed
 
   # common helpers
   dump-autoload:
