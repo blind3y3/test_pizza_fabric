@@ -26,7 +26,8 @@
 
 Опционально: засидить моковыми заказами базу таблицу orders:  
 `docker compose exec php vendor/bin/phinx seed:run -e development`
----
+
+### task команды
 Список всех доступных task команд: [taskfile.yml](taskfile.yml)  
 Если команда принимает аргумент, к примеру, {{.c}}, то общий вид будет такой: `task php c='composer update'`
 
