@@ -1,13 +1,20 @@
 <?php
 
 use App\Http\Controllers\OrderController;
+use App\Modules\Order\Decorator\OrderServiceLoggerDecorator;
+use App\Modules\Order\Service\OrderServiceInterface;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\DriverManager;
 use FastRoute\RouteCollector;
+use Modules\Auth\Service\AuthService;
+use Modules\Auth\Service\AuthServiceInterface;
+use Modules\Order\Service\OrderService;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
+
+use Psr\Log\LoggerInterface;
 
 use function FastRoute\simpleDispatcher;
 
@@ -15,7 +22,7 @@ $containerBuilder = new ContainerBuilder();
 $containerBuilder->useAutowiring(true);
 
 $containerBuilder->addDefinitions([
-    'routes'     => function () {
+    'routes'                     => function () {
         return simpleDispatcher(function (RouteCollector $r) {
             $r->addGroup('/api/orders', function () use ($r) {
                 $r->addRoute('GET', '', [OrderController::class, 'index']);
@@ -26,7 +33,7 @@ $containerBuilder->addDefinitions([
             });
         });
     },
-    'appLogger'  => function () {
+    'appLogger'                  => function () {
         $logger = new Logger('appLogger');
         $lf = new LineFormatter(null, 'Y-m-d H:i:s');
         $sh = new StreamHandler(__DIR__ . '/../../app.log', Level::Debug);
@@ -34,7 +41,7 @@ $containerBuilder->addDefinitions([
         $logger->pushHandler($sh);
         return $logger;
     },
-    'connection' => function () {
+    'connection'                 => function () {
         return DriverManager::getConnection([
             'driver'        => 'pdo_mysql',
             'host'          => 'mysql',
@@ -47,6 +54,15 @@ $containerBuilder->addDefinitions([
                 PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
             ]
         ]);
+    },
+    //interfaces
+    AuthServiceInterface::class  => DI\autowire(AuthService::class),
+    //decorators
+    OrderService::class          => DI\autowire(),
+    OrderServiceInterface::class => function (DI\Container $container) {
+        $orderService = $container->get(OrderService::class);
+        $logger = $container->get('appLogger');
+        return new OrderServiceLoggerDecorator($orderService, $logger);
     }
 ]);
 //@TODO централизованный ExceptionHandler?

@@ -1,0 +1,258 @@
+openapi: 3.0.0
+info:
+  title: Pizza Fabric API
+  description: API для управления заказами пиццы.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+    description: Локальная среда разработки
+tags:
+  - name: order
+    description: Операции с заказами
+paths:
+  /orders:
+    get:
+      summary: Получить список заказов
+      tags:
+        - order
+      parameters:
+        - name: done
+          in: query
+          description: Флаг готовности заказа
+          required: false
+          schema:
+            type: integer
+            enum: [ 0, 1 ]
+        - name: X-Auth-Key
+          in: header
+          description: Ключ авторизации
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+              example:
+                - order_id: 192946903771960
+                  items:
+                    - 691
+                    - 691
+                    - 691
+                  done: false
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: Unauthorized
+    post:
+      summary: Создать новый заказ
+      tags:
+        - order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+            example:
+              items:
+                - 691
+                - 691
+                - 691
+      responses:
+        '200':
+          description: Заказ успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                order_id: 498423501026338
+                items:
+                  - 691
+                  - 691
+                  - 691
+                done: false
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: items должен быть непустым массивом чисел от 1 до 5000
+  /orders/{order_id}/items:
+    post:
+      summary: Добавить товары в заказ
+      tags:
+        - order
+      parameters:
+        - name: order_id
+          in: path
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddItemsRequest'
+            example:
+              items:
+                - 475
+                - 798
+      responses:
+        '200':
+          description: Товары успешно добавлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example: { }
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: items должен быть непустым массивом чисел от 1 до 5000
+  /orders/{order_id}:
+    get:
+      summary: Получить заказ по ID
+      tags:
+        - order
+      parameters:
+        - name: order_id
+          in: path
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Заказ успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                order_id: 192946903771960
+                items:
+                  - 691
+                  - 691
+                  - 691
+                done: false
+        '404':
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: Заказ с таким order_id не найден
+  /orders/{order_id}/done:
+    post:
+      summary: Отметить заказ как выполненный
+      tags:
+        - order
+      parameters:
+        - name: order_id
+          in: path
+          description: ID заказа
+          required: true
+          schema:
+            type: integer
+        - name: X-Auth-Key
+          in: header
+          description: Ключ авторизации
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Заказ успешно выполнен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example: { }
+        '400':
+          description: Заказ не может быть изменен или не существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: Заказ не может быть изменен или не существует
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: Unauthorized
+components:
+  schemas:
+    Order:
+      type: object
+      required:
+        - order_id
+        - items
+        - done
+      properties:
+        order_id:
+          type: integer
+          description: ID заказа
+        items:
+          type: array
+          items:
+            type: integer
+          description: Список товаров
+        done:
+          type: boolean
+          description: Флаг готовности заказа
+    CreateOrderRequest:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            type: integer
+          description: Список товаров
+    AddItemsRequest:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            type: integer
+          description: Список товаров для добавления
+    SuccessResponse:
+      type: object
+      properties: { }
+      description: Успешный ответ без данных
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Сообщение об ошибке

@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Http\Handlers\ErrorHandler;
+use Exception;
 use FastRoute\Dispatcher;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -25,25 +27,29 @@ readonly class App
     {
         $request = Request::createFromGlobals();
 
-        $dispatcher = $this->container->get('routes')->dispatch(
-            $request->getMethod(),
-            $request->getPathInfo(),
-        );
+        try {
+            $dispatcher = $this->container->get('routes')->dispatch(
+                $request->getMethod(),
+                $request->getPathInfo(),
+            );
 
-        switch ($dispatcher[0]) {
-            case Dispatcher::NOT_FOUND:
-                $response = new JsonResponse(['message' => '404 Not Found'], 404);
-                break;
-            case Dispatcher::METHOD_NOT_ALLOWED:
-                $response = new JsonResponse(['message' => '405 Method Not Allowed'], 405);
-                break;
-            case Dispatcher::FOUND:
-                [$controller, $method] = $dispatcher[1];
-                $vars = $dispatcher[2];
+            switch ($dispatcher[0]) {
+                case Dispatcher::NOT_FOUND:
+                    $response = new JsonResponse(['message' => '404 Not Found'], 404);
+                    break;
+                case Dispatcher::METHOD_NOT_ALLOWED:
+                    $response = new JsonResponse(['message' => '405 Method Not Allowed'], 405);
+                    break;
+                case Dispatcher::FOUND:
+                    [$controller, $method] = $dispatcher[1];
+                    $vars = $dispatcher[2];
 
-                $controllerInstance = $this->container->get($controller);
-                $response = $controllerInstance->$method($request, $vars);
-                break;
+                    $controllerInstance = $this->container->get($controller);
+                    $response = $controllerInstance->$method($request, $vars);
+                    break;
+            }
+        } catch (Exception $exception) {
+            $response = $this->container->get(ErrorHandler::class)->handle($exception);
         }
 
         /** @var Response $response */

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Service;
 
-
 use App\Modules\Auth\Exception\UnauthorizedException;
 
-class AuthService
+class AuthService implements AuthServiceInterface
 {
     /**
      * @throws UnauthorizedException

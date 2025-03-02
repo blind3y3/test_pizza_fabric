@@ -7,6 +7,7 @@ namespace Modules\Order\Repository;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Types\BooleanType;
 use Modules\Order\Dto\OrderDto;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -34,9 +35,9 @@ class OrderRepository
             ->select('*')
             ->from('orders');
 
-        if ($done) {
+        if ($done !== null) {
             $this->builder
-                ->where('done = :done')
+                ->andWhere('done = :done')
                 ->setParameter('done', $done);
         }
 

@@ -6,12 +6,13 @@ namespace Modules\Order\Service;
 
 use App\Modules\Order\Exception\OrderCannotBeModifiedException;
 use App\Modules\Order\Exception\OrderNotFoundException;
+use App\Modules\Order\Service\OrderServiceInterface;
 use Doctrine\DBAL\Exception;
 use Modules\Order\Collection\OrderCollection;
 use Modules\Order\Dto\OrderDto;
 use Modules\Order\Repository\OrderRepository;
 
-readonly class OrderService
+readonly class OrderService implements OrderServiceInterface
 {
     public function __construct(
         private OrderRepository $orderRepository
@@ -38,7 +39,7 @@ readonly class OrderService
      */
     public function create(array $items): OrderDto
     {
-        // Уникальный id заказа длиной в 15 символов
+        // Уникальный id заказа длиной в 15 символов. Так как в базе это int, то и возвращается в эндпоинтах как int
         $orderId = mt_rand(100_000_000_000_000, 999_999_999_999_999);
         $dto = OrderDto::createFromRequestData($orderId, $items);
         $this->orderRepository->save($dto);
@@ -87,7 +88,7 @@ readonly class OrderService
     /**
      * @throws Exception
      */
-    public  function setDone(int $orderId): void
+    public function setDone(int $orderId): void
     {
         $this->orderRepository->setDone($orderId);
     }

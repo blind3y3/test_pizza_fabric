@@ -17,7 +17,7 @@ class OrderOrderIdInVarsValidation
         v::stringType()
             ->notEmpty()
             ->numericVal()
-            ->setTemplate("'orderId' должен быть числом")
-            ->assert($data['orderId']);
+            ->setTemplate("'order_id' должен быть числом")
+            ->assert($data['order_id']);
     }
 }
