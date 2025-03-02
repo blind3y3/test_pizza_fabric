@@ -15,7 +15,7 @@
 2. Если в системе нет [task](https://taskfile.dev/):
     - `cp .env.example .env`
     - `docker compose up --build -d`
-    - `docker compose exec php php composer install`
+    - `docker compose exec php composer install`
     - `cp app/phinx.example.php app/phinx.php`
     - Заполнить параметры для `app/phinx.php`:
    ```
