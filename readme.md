@@ -30,6 +30,8 @@
 X-Auth-Key лежит в .env файле, прокидывается вместе с другими переменными в контейнер php  
 Документация в формате openapi доступна по адресу [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html)
 ---
+
+### task команды
 Список всех доступных task команд: [taskfile.yml](taskfile.yml)  
 Если команда принимает аргумент, к примеру, {{.c}}, то общий вид будет такой: `task php c='composer update'`
 
