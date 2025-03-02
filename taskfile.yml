@@ -22,6 +22,17 @@ tasks:
     cmds:
       - docker compose down --rmi all --volumes --remove-orphans
 
+  #init
+  init:
+    cmds:
+      - task: prepare-env
+      - task: build
+      - docker compose exec php php composer install
+      - 'cp app/phinx.example.php app/phinx.php'
+      # потом заполнить переменные в phinx.php
+      - task: migrate
+      # опционально: task seed
+
   # common helpers
   dump-autoload:
     cmd: docker compose exec php composer dump-autoload
@@ -31,8 +42,6 @@ tasks:
   # migrations
   phinx:
     cmd: docker compose exec php vendor/bin/phinx {{.c}}
-  phinx-migrate:
-    cmd: docker compose exec php vendor/bin/phinx init
   migrate:
     cmd: docker compose exec php vendor/bin/phinx migrate -e development
   seed:
@@ -42,9 +51,10 @@ tasks:
 
   # other
   permissions:
-    cmds:
-      - 'sudo chown $USER:$USER app'
-  for-linux-env:
+    cmd: sudo chown $USER:$USER app'
+  prepare-env:
     cmd: 'cp .env.example .env'
+
+  # when use task with no args
   default:
     - task: up
